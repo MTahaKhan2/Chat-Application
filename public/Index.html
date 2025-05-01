@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Chat App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="chat-container">
+    <img src="public\picture\chatapp.png" alt="">
+    <div id="messages"></div>
+    <input id="chat-input" type="text" placeholder="Type a message" />
+    <button id="send-button">Send</button>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script> <!-- Only one inclusion of socket.io -->
+  <script>
+    // Connect to the socket server
+    const socket = io();
+
+    // Get DOM elements
+    const sendButton = document.getElementById('send-button');
+    const messageInput = document.getElementById('chat-input');
+    const messagesContainer = document.getElementById('messages');
+
+    // Emit a chat message to the server
+    sendButton.addEventListener('click', () => {
+      const message = messageInput.value;
+      if (message.trim()) {
+        socket.emit('chat message', message); // Send the message to the server
+        messageInput.value = ''; // Clear the input field
+      }
+    });
+
+    // Listen for incoming chat messages
+    socket.on('chat message', (msg) => {
+      const messageElement = document.createElement('div');
+      messageElement.textContent = msg; // Display the message
+      messagesContainer.appendChild(messageElement); // Append to the chat
+      messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to the bottom
+    });
+  </script>
+</body>
+</html>
